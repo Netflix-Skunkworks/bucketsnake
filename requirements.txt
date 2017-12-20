@@ -1,0 +1,5 @@
+boto3   # no-deploy
+raven
+swag-client
+pyyaml
+git+https://github.com/Netflix-Skunkworks/raven-python-lambda.git#egg=raven-python-lambda

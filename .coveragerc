@@ -1,0 +1,3 @@
+[report]
+include = bucket_snake/*.py
+omit = bucket_snake/__about__.py
