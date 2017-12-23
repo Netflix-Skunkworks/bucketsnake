@@ -47,10 +47,93 @@ Dependencies
 -----------------
 Bucket Snake depends on [Historical](https://github.com/Netflix-Skunkworks/historical), and the [Historical S3 Report](https://github.com/Netflix-Skunkworks/historical-reports).
 
-
 How to Install
 ----------------------
 Bucket Snake can be deployed with [Serverless](https://serverless.com).  See the serverless examples in the `docs` directory.
+
+### IAM Roles
+Bucket Snake operates from a hub-spoke type of model. The lambda function itself requires an IAM role, which then
+assumes into other account IAM roles to provision the S3 access for a given application.
+
+#### Bucket Snake Lambda Function IAM Role
+
+The trust policy must be similar to:
+
+    {
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Action": "sts:AssumeRole",
+                "Principal": {
+                    "Service": "lambda.amazonaws.com"
+                }
+            }
+        ]
+    }
+
+The inline-polices must be similar to:
+
+    {
+        "Statement": [
+            {
+                "Sid": "Logs",
+                "Effect": "Allow",
+                "Action": [
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                ],
+                "Resource": "*"
+            },
+            {
+                "Sid": "HistoricalS3",
+                "Effect": "Allow",
+                "Action": "s3:GetObject",
+                "Resource": "arn:aws:s3:::historical-s3-report-bucket/prefix/to/historical-s3-reports.json"
+            },
+            {
+                "Sid": "AssumeToRoles",
+                "Effect": "Allow",
+                "Action": "sts:AssumeRole",
+                "Resource": "arn:aws:iam::*:role/BucketSnake"
+            }
+        ]
+    }
+
+
+#### In-account Bucket Snake IAM Role (Destination Roles)
+
+The trust policy must be similar to:
+
+    {
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Action": "sts:AssumeRole",
+                "Principal": {
+                    "AWS": "arn:aws:iam::SOURCE-BUCKET-SNAKE-LAMBDA-ACCOUNT-HERE:role/BucketSnakeLambdaProfile"
+                }
+            }
+        ]
+    }
+
+The inline-polices must be similar to:
+
+    {
+        "Statement": [
+            {
+                "Action": [
+                    "iam:CreateRole",
+                    "iam:GetRole",
+                    "iam:PutRolePolicy",
+                    "iam:UpdateAssumeRolePolicy"
+                ],
+                "Resource": "*",
+                "Effect": "Allow"
+            }
+        ]
+    }
+
 
 ### Configuration
 Bucket Snake has a number of environment variables that it can be configured with:
