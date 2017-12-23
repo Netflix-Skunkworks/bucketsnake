@@ -1,0 +1,40 @@
+service: "bucket-snake"
+
+provider:
+  name: aws
+  runtime: python3.6
+  memorySize: 512
+  timeout: 300
+  deploymentBucket:
+    name: some-s3-bucket-here
+
+custom: ${file(serverless_configs/${opt:stage}.yml)}
+
+functions:
+  BucketSnake:
+    handler: bucket_snake.entrypoints.handler
+    description: Bucket Snake grantsss S3 permissionsss at scale.
+    tags:
+      owner: youremail@yourcompanyhere.com
+    role: arn:aws:iam::${self:custom.accountId}:role/BucketSnakeLambdaProfile
+    environment:
+      SENTRY_DSN: ${self:custom.sentryDSN}
+      BLACKLISTED_SOURCE_ACCOUNTS: your,blacklisted,source,accounts,here,as,comma,separated,list
+      BLACKLISTED_BUCKET_ACCOUNTS: your,blacklisted,bucket,accounts,here,as,comma,separated,list
+      APP_REPORTS_BUCKETS: historical,s3,reports,buckets,here,as,comma,separated,list
+      SWAG_BUCKET: your-swag-bucket-here
+      SWAG_REGION: swag-region-here
+      SWAG_DATA_FILE: prefix/to/account.json
+      REPORTS_BUCKET: historical-s3-reports-bucket-for-bucketsnake
+      REPORTS_REGION: historical-s3-reports-bucket-region-for-bucketsnake
+      REPORTS_PREFIX: prefix/to/historical-s3-report.json
+
+resources:
+  Resources:
+    BucketSnakeLogGroup:
+      Properties:
+        RetentionInDays: "3"
+
+plugins:
+  - serverless-python-requirements
+  - serverless-prune-plugin

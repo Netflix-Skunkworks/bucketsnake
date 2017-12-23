@@ -1,0 +1,8 @@
+accountId: YOUR-ACCOUNT-NUMBER-TO-DEPLOY-TO-HERE
+accountName: ACCOUNT-NAME-HERE
+sentryDSN: SENTRY-DSN-HERE
+pythonRequirements:
+    dockerizePip: true
+prune:
+  automatic: true
+  number: 3
