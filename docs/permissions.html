@@ -1,0 +1,137 @@
+<html><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1"/><title>Bucket Snake S3 Permissions · Bucket Snake</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="Bucket Snake S3 Permissions · Bucket Snake"/><meta property="og:type" content="website"/><meta property="og:url" content="https://github.com/Netflix-Skunkworks/bucketsnake/bucketsnake/index.html"/><meta property="og:description" content="Bucket Snake abstracts S3 permissions into the following categories:"/><link rel="shortcut icon" href="/bucketsnake/img/favicon.png"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><link rel="stylesheet" href="/bucketsnake/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/bucketsnake/"><img class="logo" src="/bucketsnake/img/logo.png"/><h2 class="headerTitle">Bucket Snake</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li><a href="/bucketsnake/docs/intro.html" target="_self">Docs</a></li><li><a href="https://github.com/Netflix-Skunkworks/bucketsnake" target="_self">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Introduction &amp; Background</span></h2></div><div class="navGroups"><div class="navGroup navGroupActive"><h3>Introduction &amp; Background</h3><ul><li class="navListItem"><a class="navItem" href="/bucketsnake/docs/intro.html">Introduction</a></li><li class="navListItem"><a class="navItem" href="/bucketsnake/docs/s3background.html">S3 Background</a></li><li class="navListItem"><a class="navItem" href="/bucketsnake/docs/howitworks.html">How it works</a></li><li class="navListItem navListItemActive"><a class="navItem navItemActive" href="/bucketsnake/docs/permissions.html">Permission Reference</a></li></ul></div><div class="navGroup navGroupActive"><h3>Installation &amp; Configuration</h3><ul><li class="navListItem"><a class="navItem" href="/bucketsnake/docs/installation.html">Deployment</a></li><li class="navListItem"><a class="navItem" href="/bucketsnake/docs/configuration.html">Configuration</a></li></ul></div></div></section></div><script>
+          var toggler = document.getElementById('navToggler');
+          var nav = document.getElementById('docsNav');
+          toggler.onclick = function() {
+            nav.classList.toggle('docsSliderActive');
+          };
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1>Bucket Snake S3 Permissions</h1></header><article><div><span><p>Bucket Snake abstracts S3 permissions into the following categories:</p>
+<ol>
+<li><code>list</code></li>
+<li><code>get</code></li>
+<li><code>put</code></li>
+<li><code>delete</code></li>
+</ol>
+<h2><a class="anchor" aria-hidden="true" name="bucket-vs-object-level-permissions"></a><a href="#bucket-vs-object-level-permissions" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Bucket vs. Object level permissions</h2>
+<p>S3 has two types of S3 permissions:</p>
+<ol>
+<li>Bucket permissions</li>
+<li>Object permissions</li>
+</ol>
+<p>Bucket permissions are applied to an entire bucket, whereas object permissions are applied to a prefix within a bucket.</p>
+<p><em>List</em> permissions are <em>bucket-level</em> permissions (<a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/using-with-s3-actions.html#using-with-s3-actions-related-to-buckets">more info here</a>). Granting <code>list</code> access to a bucket will grant access to list the contents of an entire S3 bucket. When Bucket Snake generates the IAM permissions, it will always make <code>list</code> a separate statement. Thus, lumping <code>list</code> permissions with other object-level permissions is fine; Bucket Snake will handle this properly.</p>
+<p>Object-level permissions will be applied to the specified prefix that is provided. Object-level permissions are <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/using-with-s3-actions.html#using-with-s3-actions-related-to-objects">defined here</a>.</p>
+<h2><a class="anchor" aria-hidden="true" name="s3-iam-permissions-mapping"></a><a href="#s3-iam-permissions-mapping" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>S3 -&gt; IAM Permissions Mapping</h2>
+<p>The abstracted S3 permissions are transformed into the following IAM permissions:</p>
+<ol>
+<li><code>list</code>
+<ul>
+<li><code>s3:ListBucket</code></li>
+<li><code>s3:ListBucketVersions</code></li>
+</ul></li>
+<li><code>get</code>
+<ul>
+<li><code>s3:GetObject</code></li>
+<li><code>s3:GetObjectTagging</code></li>
+<li><code>s3:GetObjectVersion</code></li>
+<li><code>s3:GetObjectVersionTagging</code></li>
+<li><code>s3:GetObjectAcl</code></li>
+<li><code>s3:GetObjectVersionAcl</code></li>
+</ul></li>
+<li><code>put</code>
+<ul>
+<li><code>s3:PutObject</code></li>
+<li><code>s3:PutObjectTagging</code></li>
+<li><code>s3:PutObjectVersionTagging</code></li>
+<li><code>s3:ListMultipartUploadParts</code>*</li>
+<li><code>s3:AbortMultipartUpload</code></li>
+<li><code>s3:RestoreObject</code></li>
+</ul></li>
+<li><code>delete</code>
+<ul>
+<li><code>s3:DeleteObject</code></li>
+<li><code>s3:DeleteObjectTagging</code></li>
+<li><code>s3:DeleteObjectVersion</code></li>
+<li><code>s3:DeleteObjectVersionTagging</code></li>
+</ul></li>
+</ol>
+<p><em>*Listing multipart uploads is typically used when performing multipart uploads, and as such, has been lumped in with <code>put</code> permissions.</em></p>
+<h2><a class="anchor" aria-hidden="true" name="sample-generated-iam-policy"></a><a href="#sample-generated-iam-policy" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Sample Generated IAM Policy</h2>
+<p>The role provisioned in the bucket-residing account would look similar to this:</p>
+<pre><code class="hljs">{
+    &quot;Statement&quot;: [
+        {
+            &quot;Sid&quot;: &quot;List&quot;,
+            &quot;Effect&quot;: &quot;Allow&quot;,
+            &quot;Action&quot;: [
+                &quot;s3:ListBucket&quot;,
+                &quot;s3:ListBucketVersions&quot;
+            ],
+            &quot;Resource&quot;: [
+                &quot;arn:aws:s3:::&lt;bucket-name&gt;&quot;,
+                # ... All the buckets that need listing here ...
+            ]
+        },
+        {
+            &quot;Sid&quot;: &quot;Get&quot;,
+            &quot;Effect&quot;: &quot;Allow&quot;,
+            &quot;Action&quot;: [
+                &quot;s3:GetObject&quot;,
+                &quot;s3:GetObjectTagging&quot;,
+                &quot;s3:GetObjectVersion&quot;,
+                &quot;s3:GetObjectVersionTagging&quot;
+            ],
+            &quot;Resource&quot;: [
+                &quot;arn:aws:s3:::&lt;bucket-name&gt;/&lt;prefix&gt;&quot;,
+                # ... All the buckets and prefixes requiring get access here ...
+            ]
+        },
+        {
+            &quot;Sid&quot;: &quot;Put&quot;,
+            &quot;Effect&quot;: &quot;Allow&quot;,
+            &quot;Action&quot;: [
+                &quot;s3:PutObject&quot;,
+                &quot;s3:PutObjectTagging&quot;,
+                &quot;s3:PutObjectVersionTagging&quot;,
+                &quot;s3:ListMultipartUploadParts&quot;,
+                &quot;s3:AbortMultipartUpload&quot;,
+                &quot;s3:RestoreObject&quot;
+            ],
+            &quot;Resource&quot;: [
+                &quot;arn:aws:s3:::&lt;bucket-name&gt;/&lt;prefix&gt;&quot;,
+                # ... All the buckets and prefixes requiring put access here ...
+            ]
+        },
+        {
+            &quot;Sid&quot;: &quot;Delete&quot;,
+            &quot;Effect&quot;: &quot;Allow&quot;,
+            &quot;Action&quot;: [
+                &quot;s3:DeleteObject&quot;,
+                &quot;s3:DeleteObjectTagging&quot;,
+                &quot;s3:DeleteObjectVersion&quot;,
+                &quot;s3:DeleteObjectVersionTagging&quot;
+                 ],
+            &quot;Resource&quot;: [
+                &quot;arn:aws:s3:::&lt;bucket-name&gt;/&lt;prefix&gt;&quot;,
+                # ... All the buckets and prefixes requiring delete access here ...
+            ]
+        }
+    ]
+}
+</code></pre>
+<p>The source application would be given an inline policy to assume to the destination IAM role, which looks like:</p>
+<pre><code class="hljs">{
+    &quot;Statement&quot;: [
+        {
+            &quot;Effect&quot;: &quot;Allow&quot;,
+            &quot;Action&quot;: &quot;sts:AssumeRole&quot;,
+            &quot;Resource&quot;: [
+                &quot;arn:aws:iam::&lt;dest-role-account-number&gt;:role/&lt;app-name&gt;-&lt;12-digit-app-account-number&gt;&quot;,
+                # ... All the roles to assume into here ...
+            ]
+        }
+    ]
+}
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" name="limitations"></a><a href="#limitations" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Limitations</h2>
+<p>IAM has a <a href="http://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-limits.html">limitation</a> of 64 characters for IAM role names. The format that is chosen for destination account with the format declared for cross-account roles is <code>&lt;AppName&gt;-&lt;12-digit-AppAccountNumber&gt;</code>, this leaves 51 characters remaining for application names. Thus, applications with names that are more than 51 characters are not supported by Bucket Snake.</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="howitworks.html">← How Bucket Snake Works</a><a class="docs-next button" href="installation.html">Deploying the Bucket Snake Lambda Function →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/bucketsnake/" class="nav-home"><img src="/bucketsnake/img/logo.png" alt="Bucket Snake" width="66" height="58"/></a><div><h5>Background</h5><a href="/bucketsnake/docs/intro.html">Introduction</a><a href="/bucketsnake/docs/s3background.html">General S3 Background</a><a href="/bucketsnake/docs/howitworks.html">How Bucket Snake Works</a></div><div><h5>Getting Started</h5><a href="/bucketsnake/docs/installation.html">Installation</a><a href="/bucketsnake/docs/configuration.html">Configuration</a></div><div><h5>Community</h5><a href="https://github.com/Netflix-Skunkworks/bucketsnake">GitHub</a></div></section><section class="copyright">These docs were created with <a href="https://docusaurus.io/">Docusaurus</a>.</section><section class="copyright" style="padding-top:10px;">Copyright © 2017 Netflix, Inc.</section></footer></div></body></html>

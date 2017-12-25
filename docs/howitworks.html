@@ -1,0 +1,107 @@
+<html><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1"/><title>How Bucket Snake Works · Bucket Snake</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="How Bucket Snake Works · Bucket Snake"/><meta property="og:type" content="website"/><meta property="og:url" content="https://github.com/Netflix-Skunkworks/bucketsnake/bucketsnake/index.html"/><meta property="og:description" content="Bucket Snake works by creating and provisioning IAM roles in the accounts that own buckets for a given application."/><link rel="shortcut icon" href="/bucketsnake/img/favicon.png"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><link rel="stylesheet" href="/bucketsnake/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/bucketsnake/"><img class="logo" src="/bucketsnake/img/logo.png"/><h2 class="headerTitle">Bucket Snake</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li><a href="/bucketsnake/docs/intro.html" target="_self">Docs</a></li><li><a href="https://github.com/Netflix-Skunkworks/bucketsnake" target="_self">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Introduction &amp; Background</span></h2></div><div class="navGroups"><div class="navGroup navGroupActive"><h3>Introduction &amp; Background</h3><ul><li class="navListItem"><a class="navItem" href="/bucketsnake/docs/intro.html">Introduction</a></li><li class="navListItem"><a class="navItem" href="/bucketsnake/docs/s3background.html">S3 Background</a></li><li class="navListItem navListItemActive"><a class="navItem navItemActive" href="/bucketsnake/docs/howitworks.html">How it works</a></li><li class="navListItem"><a class="navItem" href="/bucketsnake/docs/permissions.html">Permission Reference</a></li></ul></div><div class="navGroup navGroupActive"><h3>Installation &amp; Configuration</h3><ul><li class="navListItem"><a class="navItem" href="/bucketsnake/docs/installation.html">Deployment</a></li><li class="navListItem"><a class="navItem" href="/bucketsnake/docs/configuration.html">Configuration</a></li></ul></div></div></section></div><script>
+          var toggler = document.getElementById('navToggler');
+          var nav = document.getElementById('docsNav');
+          toggler.onclick = function() {
+            nav.classList.toggle('docsSliderActive');
+          };
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1>How Bucket Snake Works</h1></header><article><div><span><p>Bucket Snake works by creating and provisioning IAM roles in the accounts that own buckets for a given application.</p>
+<p>The general flow works as follows:</p>
+<ol>
+<li>Bucket Snake gets triggered with a payload describing:
+<ul>
+<li>The name of the application</li>
+<li>The IAM role name that application uses</li>
+<li>The AWS account the application's IAM role resides in.</li>
+<li>A set of S3 buckets, and the corresponding permissions to grant</li>
+</ul></li>
+<li>With the above information, Bucket Snake figures out where the buckets are located, creates the necessary roles with the access requested.
+<ul>
+<li>If an S3 bucket resides in the same account as the source application, Bucket Snake simply grants permissions to the source application, so no role assumption is required.</li>
+</ul></li>
+</ol>
+<h2><a class="anchor" aria-hidden="true" name="sources-of-truth"></a><a href="#sources-of-truth" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Sources of Truth</h2>
+<p>Bucket Snake depends on <a href="https://github.com/Netflix-Skunkworks/swag-api">SWAG</a>, <a href="https://github.com/Netflix-Skunkworks/historical">Historical</a>, and the <a href="https://github.com/Netflix-Skunkworks/historical-reports">Historical S3 Report</a>.</p>
+<p>SWAG is a schema for the accounts in your infrastructure. It's a source of truth to know which AWS accounts you have, and some details about them.</p>
+<p>Historical keeps track of all S3 buckets in your infrastructure, and the Historical S3 Report is a JSON file that is a dump of all S3 buckets currently in your infrastructure. This is used as a lookup-table to know which buckets you have, which region and AWS account they reside in.</p>
+<h3><a class="anchor" aria-hidden="true" name="historical-reports"></a><a href="#historical-reports" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Historical Reports</h3>
+<p>The historical s3 report is needed because S3 ARNs don't provide enough detail on S3 buckets. For example, one cannot determine the account and region by just having an S3 ARN or bucket name.</p>
+<p>The Historical S3 report solves this by providing a look-up table of S3 bucket, and the corresponding region and AWS account for the bucket. This is what Bucket Snake uses to determine if S3 access is cross-account.</p>
+<p>A Bucket Snake aware client needs access to this data source to determine if role-assumption is required. It is assumed that this report is stored in an S3 bucket that permits multiple accounts in your infrastructure access to it (on the bucket policy). Bucket Snake will grant the application access to this JSON file.</p>
+<h2><a class="anchor" aria-hidden="true" name="triggering-the-lambda"></a><a href="#triggering-the-lambda" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Triggering the Lambda</h2>
+<p>Bucket Snake is triggered from an AWS lambda function invocation that has a payload with this schema:</p>
+<pre><code class="hljs">{
+    &quot;role_name&quot;: &quot;AppSourceIamRole&quot;,
+    &quot;app_name&quot;: &quot;nameOfAppWithSourceIAMRole&quot;,
+    &quot;account_number&quot;: &quot;The12digitAWSAccountIDWhereTheAppSourceIAMRoleLives&quot;,
+    &quot;buckets&quot;: {
+        &quot;name-of-s3-bucket&quot;: [
+            {
+                &quot;prefix&quot;: &quot;*&quot;,
+                &quot;perms&quot;: [
+                    &quot;list&quot;
+                ]
+            },
+            {
+                &quot;prefix&quot;: &quot;some/prefix/here&quot;,
+                &quot;perms&quot;: [
+                    &quot;get&quot;,
+                    &quot;put&quot;,
+                    &quot;delete&quot;
+                ]
+            }
+        ]
+        &quot;another-s3-bucket&quot;: [
+            &quot;perms&quot;: [
+                &quot;get&quot;
+            ],
+            &quot;prefix: &quot;*&quot;
+        ],
+        &quot;and-another-s3-bucket&quot;: [
+            &quot;perms&quot;: [
+                &quot;put&quot;
+            ],
+            &quot;prefix&quot;: &quot;some/drop/location&quot;
+        ],
+        ...
+    }
+}
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" name="now-what"></a><a href="#now-what" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Now what?</h3>
+<p>Bucket Snake would receive the JSON from the lambda invocation, and from that, would:</p>
+<ol>
+<li>Verify that the source IAM role exists</li>
+<li>Verify that the buckets exist, and are permitted by Bucket Snake (more on this in the configuration section)</li>
+<li>Determine which S3 buckets are in the same account as the source application, and which are not</li>
+<li>For buckets in the same account, Bucket Snake will add in the proper S3 permissions to the source app IAM role</li>
+<li>For buckets that are not in the same account, Bucket Snake will create IAM roles in the destination accounts with access to the respective buckets
+<ul>
+<li>Destination IAM role name follows the format: <code>AppName-12DigitSourceAccountNumber</code>.</li>
+<li>This role will have a trust policy that allows the source application <code>sts:AssumeRole</code> access to it.</li>
+</ul></li>
+<li>If applicable, a policy will be added to the source IAM role to grant <code>sts:AssumeRole</code> access to those destination
+IAM roles</li>
+<li>And lastly, Bucket Snake will grant access to the Historical S3 report's JSON file so that application knows
+which S3 buckets require the role assumption for access.</li>
+</ol>
+<h2><a class="anchor" aria-hidden="true" name="how-does-my-application-make-use-of-this"></a><a href="#how-does-my-application-make-use-of-this" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>How does my application make use of this?</h2>
+<p>At present no &quot;Bucket Snake aware&quot; client library exists. We are currently in the process of developing one for Python and Java.</p>
+<p>This client would work by:</p>
+<ol>
+<li>Fetch the Historical S3 JSON (access granted by Bucket Snake)</li>
+<li>Check if the S3 bucket is in the same account (this information lives in the Historical report).</li>
+</ol>
+<p>If it's in the same account, then the client directly access the bucket with the on-instance
+IAM credentials.</p>
+<p>If the bucket is in a <em>different account</em>:</p>
+<ol>
+<li>Assume to the destination role (named <code>AppName-12DigitSourceAccountNumber</code>),</li>
+<li>Cache the credentials for future use (re-assume when expired)</li>
+<li>Use the assumed credentials to access the S3 bucket</li>
+</ol>
+<h2><a class="anchor" aria-hidden="true" name="what-about-future-access"></a><a href="#what-about-future-access" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>What about future access?</h2>
+<p>Simply pass in a new payload to the lambda with additional buckets to add access to. Bucket Snake is <a href="https://en.wikipedia.org/wiki/Idempotence">idempotent</a>.</p>
+<p>The Bucket Snake policies should not be modified outside of Bucket Snake. You can modify any policy outside
+of the Bucket Snake managed ones -- Bucket Snake will not alter or modify them. This is useful should you need to add additional permissions than what Bucket Snake would provide.</p>
+<h2><a class="anchor" aria-hidden="true" name="which-permissions-are-created"></a><a href="#which-permissions-are-created" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Which permissions are created?</h2>
+<p>See the next section for details.</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="s3background.html">← S3 Background Information</a><a class="docs-next button" href="permissions.html">Bucket Snake S3 Permissions →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/bucketsnake/" class="nav-home"><img src="/bucketsnake/img/logo.png" alt="Bucket Snake" width="66" height="58"/></a><div><h5>Background</h5><a href="/bucketsnake/docs/intro.html">Introduction</a><a href="/bucketsnake/docs/s3background.html">General S3 Background</a><a href="/bucketsnake/docs/howitworks.html">How Bucket Snake Works</a></div><div><h5>Getting Started</h5><a href="/bucketsnake/docs/installation.html">Installation</a><a href="/bucketsnake/docs/configuration.html">Configuration</a></div><div><h5>Community</h5><a href="https://github.com/Netflix-Skunkworks/bucketsnake">GitHub</a></div></section><section class="copyright">These docs were created with <a href="https://docusaurus.io/">Docusaurus</a>.</section><section class="copyright" style="padding-top:10px;">Copyright © 2017 Netflix, Inc.</section></footer></div></body></html>
