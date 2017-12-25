@@ -1,0 +1,6 @@
+{
+  "docs": {
+    "Introduction & Background": ["intro", "s3background", "howitworks", "permissions"],
+    "Installation & Configuration": ["installation", "configuration"]
+  }
+}
