@@ -10,7 +10,7 @@ import os
 
 import boto3
 import pytest
-from moto import mock_sts, mock_iam, mock_s3, mock_sns
+from moto import mock_sts, mock_iam, mock_s3
 
 import bucket_snake.iam.util
 import bucket_snake.config
@@ -43,17 +43,6 @@ def sts():
     yield client
 
     mock_sts().stop()
-
-
-@pytest.yield_fixture(scope="function")
-def sns():
-    mock_sns().start()
-
-    client = boto3.client("sns", region_name="us-west-2")
-
-    yield client
-
-    mock_sns().stop()
 
 
 @pytest.yield_fixture(scope="function")
