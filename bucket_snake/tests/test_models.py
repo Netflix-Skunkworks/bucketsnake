@@ -1,5 +1,5 @@
 """
-.. module: bucket_snake.tests.test_schemas
+.. module: bucket_snake.tests.test_models
     :platform: Unix
     :copyright: (c) 2017 by Netflix Inc., see AUTHORS for more
     :license: Apache, see LICENSE for more details.
